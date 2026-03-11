@@ -3,6 +3,16 @@ name: Deploy Hugo site to GitHub Pages
 on:
   push:
     branches: [main]
+    paths:
+      - 'content/**'
+      - 'static/**'
+      - 'layouts/**'
+      - 'archetypes/**'
+      - 'themes/**'
+      - 'hugo.toml'
+      - 'go.mod'
+      - 'go.sum'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
