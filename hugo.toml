@@ -28,9 +28,9 @@ pygmentsUseClasses = true
     Title = 'VernonIT'
     Content = 'Full-lifecycle product engineering partner.'
 
-  [[params.socialIcons]]
-    name = 'github'
-    url = 'https://github.com/VernonIT'
+  #//[[params.socialIcons]]
+  #//( name = 'github'
+  #// url = 'https://github.com/VernonIT'
 
 [taxonomies]
   category = 'categories'
