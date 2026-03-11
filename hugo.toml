@@ -1,0 +1,51 @@
+baseURL = 'https://vernonit.com/'
+languageCode = 'en-us'
+title = 'VernonIT'
+theme = 'PaperMod'
+enableRobotsTXT = true
+buildDrafts = false
+buildFuture = false
+buildExpired = false
+pygmentsUseClasses = true
+
+[minify]
+  disableXML = true
+  minifyOutput = true
+
+[params]
+  env = 'production'
+  title = 'VernonIT'
+  description = 'Full-lifecycle product engineering. Web apps, platforms, and backend infrastructure.'
+  author = 'David Vernon'
+  defaultTheme = 'auto'
+  ShowReadingTime = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  showtoc = true
+
+  [params.homeInfoParams]
+    Title = 'VernonIT'
+    Content = 'Full-lifecycle product engineering partner.'
+
+  [[params.socialIcons]]
+    name = 'github'
+    url = 'https://github.com/VernonIT'
+
+[taxonomies]
+  category = 'categories'
+  tag = 'tags'
+  series = 'series'
+
+[markup]
+  [markup.goldmark.renderer]
+    unsafe = true
+  [markup.highlight]
+    noClasses = false
+    codeFences = true
+    guessSyntax = true
+    lineNos = true
+    style = 'monokai'
+
+[outputs]
+  home = ['HTML', 'RSS', 'JSON']
