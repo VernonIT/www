@@ -1,10 +1,8 @@
 baseURL = 'https://vernonit.com/'
 languageCode = 'en-us'
+defaultContentLanguage = 'en'
 title = 'VernonIT'
 enableRobotsTXT = true
-buildDrafts = false
-buildFuture = false
-buildExpired = false
 
 [module]
   [[module.imports]]
@@ -12,9 +10,14 @@ buildExpired = false
 
 [params]
   description = 'Full-lifecycle product engineering. Web apps, platforms, and backend infrastructure.'
+
   [params.author]
     name = 'David Vernon'
     email = ''
+
+  [params.theme]
+    default = 'system'
+    displayToggle = true
 
   [params.navbar]
     displayTitle = true
@@ -22,6 +25,8 @@ buildExpired = false
 
   [params.footer]
     enable = true
+    displayCopyright = true
+    displayPoweredBy = false
 
   [params.search]
     enable = true
