@@ -15,8 +15,11 @@ If a conflict arises during rebase, resolve it, `git add` the file, then `git re
 When working a GitHub issue:
 1. `git pull --rebase origin main` first
 2. Implement the change
-3. Commit with message `fix #N: <issue title>`
-4. Push, then stop and wait for review
+3. Verify acceptance criteria locally before committing:
+   - Run `hugo server -D` and check for warnings/errors in output
+   - Confirm the specific acceptance criteria stated in the issue are met
+4. Commit with message `fix #N: <issue title>`
+5. Push, then stop and wait for review
 
 ## Stack
 
