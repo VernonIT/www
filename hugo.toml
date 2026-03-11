@@ -12,7 +12,9 @@ buildExpired = false
 
 [params]
   description = 'Full-lifecycle product engineering. Web apps, platforms, and backend infrastructure.'
-  author = 'David Vernon'
+  [params.author]
+    name = 'David Vernon'
+    email = ''
 
   [params.navbar]
     displayTitle = true
