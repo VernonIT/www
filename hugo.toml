@@ -27,6 +27,7 @@ enableRobotsTXT = true
       path = '/vernonit-signature.svg'
       link = '/'
 
+
   [params.footer]
     enable = true
     displayCopyright = true
@@ -45,3 +46,13 @@ enableRobotsTXT = true
     guessSyntax = true
     lineNos = true
     style = 'monokai'
+
+[[menu.main]]
+  name = 'About'
+  pageRef = '/about'
+  weight = 10
+
+[[menu.main]]
+  name = 'Blog'
+  pageRef = '/posts'
+  weight = 20
