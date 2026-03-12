@@ -48,6 +48,11 @@ enableRobotsTXT = true
     style = 'monokai'
 
 [[menu.main]]
+  name = 'Home'
+  pageRef = '/'
+  weight = 1
+
+[[menu.main]]
   name = 'About'
   pageRef = '/about'
   weight = 10
