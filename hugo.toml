@@ -20,12 +20,14 @@ enableRobotsTXT = true
     displayToggle = true
 
   [params.navbar]
-    displayTitle = false
+    displayTitle = true
     displayLogo = true
 
     [params.navbar.logo]
-      path = '/vernonit-signature.svg'
+      path = '/vernonit-icon.png'
       link = '/'
+      height = '32'
+      width = '32'
 
 
   [params.footer]
