@@ -39,6 +39,10 @@ enableRobotsTXT = true
     enable = true
     type = 'flexsearch'
 
+  [params.blog.list]
+    sortBy = 'date'
+    sortOrder = 'desc'
+
 [markup]
   [markup.goldmark.renderer]
     unsafe = true
