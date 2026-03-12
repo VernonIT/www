@@ -1,3 +1,25 @@
+/* Post signature */
+.post-signature {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.post-signature img {
+  height: 48px;
+  width: auto;
+  opacity: 0.75;
+}
+
+.dark .post-signature {
+  border-top-color: #404040;
+}
+
+.dark .post-signature img {
+  filter: invert(1);
+  opacity: 0.6;
+}
+
 /* Contact form */
 form input,
 form textarea,
