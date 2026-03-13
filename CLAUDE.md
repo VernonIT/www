@@ -45,6 +45,22 @@ git add . && git commit -m "post: title" && git push
 
 Local preview: `hugo server -D` → http://localhost:1313
 
+## Ending a session ("land the plane")
+
+Before finishing, always:
+1. Commit and push all changes — working tree must be clean
+2. Close any GitHub issues that were resolved this session
+3. Update `.claude/current-work.md`:
+   - Bump the date in the status header
+   - Sync the open issues table to match `gh issue list --state open`
+   - Add any new files to the key file map
+   - Add any new patterns to established patterns
+4. Commit and push the updated `current-work.md`
+
+The goal: next session should be able to pick up exactly where this one left off with no lost context.
+
+---
+
 ## Session context
 
 See `.claude/current-work.md` for:
