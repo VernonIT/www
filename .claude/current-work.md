@@ -1,13 +1,13 @@
 # VernonIT/www — Current Work
 
-## Site status (as of 2026-03-12)
+## Site status (as of 2026-03-13)
 
 Live at https://vernonit.com. Hugo Extended + Hextra v0.12.1 + GitHub Pages.
 
 ### Pages
-- `/` — Hero with dot-grid background, service feature cards, recent posts section
+- `/` — Hero with dot-grid background, service feature cards, recent posts section (blog-card style)
 - `/about` — Placeholder copy (issue #34 open — David to write)
-- `/blog` — Listing page, newest first, cover images, 2 posts live
+- `/blog` — 2-column card grid layout, cover images, 2 posts live
 - `/contact` — Formspree form (ID: `myknjgwe`)
 
 ### Blog posts
@@ -21,10 +21,7 @@ Live at https://vernonit.com. Hugo Extended + Hextra v0.12.1 + GitHub Pages.
 | # | Title | Owner |
 |---|---|---|
 | #34 | Write real About page copy | David |
-| #44 | Style blog listing page — card layout | Claude |
-| #45 | Tighten homepage section spacing and typography | Claude |
-| #46 | Add social/contact links to footer | Claude |
-| #47 | Add Open Graph meta tags for social sharing | Claude |
+| #46 | Add social/contact links to footer (icons + email) | Claude |
 
 ---
 
@@ -33,15 +30,16 @@ Live at https://vernonit.com. Hugo Extended + Hextra v0.12.1 + GitHub Pages.
 | File | Purpose |
 |---|---|
 | `hugo.toml` | Site config, theme module, navbar menu, blog sort order, brand params |
-| `assets/css/custom.css` | Brand color vars, hero background, cover images, contact form, footer, signature |
+| `assets/css/custom.css` | Brand color vars, hero background, blog cards, contact form, footer, signature |
 | `content/_index.md` | Homepage — uses `layout: hextra-home` |
 | `content/about.md` | About page |
 | `content/contact.md` | Contact page with raw HTML Formspree form |
 | `content/blog/_index.md` | Blog section index |
 | `layouts/blog/single.html` | Overrides Hextra — adds cover image + signature sign-off |
-| `layouts/blog/list.html` | Overrides Hextra — adds cover image thumbnails to listing |
-| `layouts/_shortcodes/recent-posts.html` | Custom shortcode used on homepage |
+| `layouts/blog/list.html` | Overrides Hextra — 2-col card grid layout |
+| `layouts/_shortcodes/recent-posts.html` | Custom shortcode used on homepage — uses same .blog-card classes as listing |
 | `layouts/_partials/custom/footer.html` | Custom footer: © year + GitHub/LinkedIn links |
+| `layouts/_partials/opengraph.html` | Overrides Hextra — adds cover.image as og:image fallback |
 | `static/vernonit-icon.png` | Navbar logo (32×32, #006699 triangle) |
 | `static/vernonit-signature.svg` | Signature used as post sign-off |
 | `static/CNAME` | Custom domain — must not be deleted |
@@ -57,6 +55,22 @@ Live at https://vernonit.com. Hugo Extended + Hextra v0.12.1 + GitHub Pages.
 .dark { --primary-lightness: 55%; }
 ```
 
+### Blog card markup
+Both `layouts/blog/list.html` and `layouts/_shortcodes/recent-posts.html` use the same classes:
+```html
+<div class="blog-card-grid">
+  <article class="blog-card">
+    <a class="blog-card-image">…</a>   <!-- overflow:hidden here only, not on .blog-card -->
+    <div class="blog-card-body">
+      <p class="blog-card-date">…</p>
+      <h3 class="blog-card-title"><a>…</a></h3>
+      <p class="blog-card-excerpt">…</p>
+      <a class="blog-card-read-more">…</a>
+    </div>
+  </article>
+</div>
+```
+
 ### Cover images (front matter)
 YAML posts:
 ```yaml
@@ -70,6 +84,7 @@ TOML posts:
   image = "https://images.unsplash.com/photo-XXXX?w=1200&q=80"
   alt = "Description"
 ```
+Cover image is also used as `og:image` automatically (via `layouts/_partials/opengraph.html`).
 
 ### Adding a blog post
 ```sh
@@ -89,14 +104,15 @@ Copy from `~/Library/Caches/hugo_cache/modules/filecache/modules/pkg/mod/github.
 into `layouts/` at the same relative path. Already overridden:
 - `layouts/blog/single.html`
 - `layouts/blog/list.html`
+- `layouts/_partials/opengraph.html`
 
 ### Custom partial slots (Hextra)
-Only `layouts/_partials/custom/footer.html` and `navbar-title.html` are available as clean override slots.
+Clean override slots: `layouts/_partials/custom/footer.html`, `navbar-title.html`, `head-end.html`.
 For anything else, override the full layout file.
 
 ---
 
 ## Things to watch
-- `hero.txt` is sitting in the repo root (not committed, not gitignored) — safe to delete once hero is final
+- `hero.txt` is sitting in the repo root (untracked, not gitignored) — safe to delete once hero is final
 - Unsplash cover image URLs may need replacing with owned assets long-term
-- LinkedIn URL in footer (`/in/davidvernon`) — verify this is correct slug
+- LinkedIn URL confirmed: https://www.linkedin.com/in/vidv
