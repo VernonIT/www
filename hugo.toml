@@ -16,8 +16,8 @@ enableRobotsTXT = true
     email = ''
 
   [params.theme]
-    default = 'system'
-    displayToggle = true
+    default = 'light'
+    displayToggle = false
 
   [params.navbar]
     displayTitle = true
