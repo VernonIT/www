@@ -1,3 +1,48 @@
+/* Brand primary color — #006699 = hsl(200, 100%, 30%) */
+:root {
+  --primary-hue: 200;
+  --primary-saturation: 100%;
+  --primary-lightness: 30%;
+}
+
+.dark {
+  --primary-lightness: 55%;
+}
+
+/* Cover images — post header */
+.post-cover {
+  margin-bottom: 2rem;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  max-height: 420px;
+}
+
+.post-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Cover images — blog listing thumbnails */
+.post-listing-cover {
+  display: block;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  max-height: 240px;
+  margin-bottom: 0.5rem;
+}
+
+.post-listing-cover img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.post-listing-cover:hover img {
+  transform: scale(1.02);
+}
+
 /* Post signature */
 .post-signature {
   margin-top: 3rem;
@@ -18,6 +63,20 @@
 .dark .post-signature img {
   filter: invert(1);
   opacity: 0.6;
+}
+
+/* Hero background — subtle dot grid */
+.hero-section {
+  position: relative;
+  padding: 3rem 0 2rem;
+  margin-bottom: 2rem;
+  background-image: radial-gradient(circle, rgba(0, 102, 153, 0.18) 1.5px, transparent 1.5px);
+  background-size: 28px 28px;
+  border-radius: 1rem;
+}
+
+.dark .hero-section {
+  background-image: radial-gradient(circle, rgba(0, 153, 204, 0.15) 1.5px, transparent 1.5px);
 }
 
 /* Contact form */
