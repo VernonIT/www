@@ -2,10 +2,18 @@
 
 ## Git workflow
 
-Always pull and rebase before committing:
+Pull **once at the start of a task**, before editing any files:
 
 ```sh
-git pull --rebase origin main   # before any commit
+git pull --rebase origin main   # at task start, before any edits
+```
+
+Do NOT pull again right before committing — git will refuse if there are unstaged changes. The correct commit sequence is:
+
+```sh
+git add <files>
+git commit -m "..."
+git push   # if rejected, then: git pull --rebase origin main && git push
 ```
 
 If a conflict arises during rebase, resolve it, `git add` the file, then `git rebase --continue`.
