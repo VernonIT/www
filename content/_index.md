@@ -9,7 +9,7 @@ layout: hextra-home
 Senior Engineering Meets&nbsp;<br class="sm:block hidden" />Strategic Thinking.
 {{< /hextra/hero-headline >}}
 
-<div class="mt-6 mb-12">
+<div class="mt-6 mb-8">
 {{< hextra/hero-subtitle >}}
 From writing code to leading teams to architecting systems&nbsp;<br class="sm:block hidden" />I've done the work at every level. That breadth is what lets me&nbsp;<br class="sm:block hidden" />cut through complexity and deliver solutions that stick.
 {{< /hextra/hero-subtitle >}}
@@ -28,7 +28,7 @@ From writing code to leading teams to architecting systems&nbsp;<br class="sm:bl
   {{< hextra/feature-card icon="code" title="Software Engineering" subtitle="Full-lifecycle product and platform engineering." >}}
 {{< /hextra/feature-grid >}}
 
-<div class="mt-16 mb-4">
+<div class="mt-12 mb-4">
 
 ## Recent Articles
 
