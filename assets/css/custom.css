@@ -147,7 +147,6 @@ form button[type="submit"]:hover {
 .blog-card {
   border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -171,6 +170,7 @@ form button[type="submit"]:hover {
   display: block;
   aspect-ratio: 16 / 9;
   overflow: hidden;
+  border-radius: 0.75rem 0.75rem 0 0;
 }
 
 .blog-card-image img {
