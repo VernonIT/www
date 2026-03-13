@@ -5,6 +5,10 @@ draft = false
 tags = ["azure", "msal", "authentication", "react", "csharp", "dotnet"]
 categories = ["development", "security"]
 description = "A practical guide to configuring MSAL.js on a React frontend and Microsoft.Identity.Web on a C# REST API, both hosted on Azure App Service behind an Application Gateway."
+
+[cover]
+  image = "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1200&q=80"
+  alt = "Code on a screen"
 +++
 
 Building an internal app on Azure with a React frontend and a C# REST API is a common pattern — but getting authentication wired up correctly across both layers has a lot of subtle gotchas. This post walks through the full setup based on real questions that came up during a recent project, covering everything from app registrations to popup login issues.

@@ -40,6 +40,11 @@
             {{- end -}}
           {{- end -}}
         </div>
+        {{- with .Params.cover.image }}
+        <div class="post-cover">
+          <img src="{{ . }}" alt="{{ $.Params.cover.alt | default $.Title }}" />
+        </div>
+        {{- end }}
         <div class="content">
           {{ .Content }}
         </div>

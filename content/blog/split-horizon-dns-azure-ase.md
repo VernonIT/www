@@ -6,6 +6,9 @@ tags: ["azure", "dns", "networking", "infoblox", "app-service-environment"]
 categories: ["infrastructure"]
 description: "Resolving cross-tenant ASE domains on your on-premises network using Infoblox conditional forwarding."
 showToc: true
+cover:
+  image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80"
+  alt: "Server room with blue lighting"
 ---
 
 ## The Problem
