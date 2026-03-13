@@ -36,3 +36,11 @@ git add . && git commit -m "post: title" && git push
 ```
 
 Local preview: `hugo server -D` → http://localhost:1313
+
+## Session context
+
+See `.claude/current-work.md` for:
+- Current site status and open issues
+- Key file map
+- Established patterns (brand color, cover images, template overrides)
+- Things to watch
