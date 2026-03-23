@@ -1,6 +1,6 @@
 +++
 title = "Bootstrapping a Factory That Builds Itself"
-date = 2026-03-23
+date = 2026-03-20
 draft = false
 tags = ["ai", "agents", "claude", "go", "cli", "software-factory"]
 categories = ["development", "ai"]

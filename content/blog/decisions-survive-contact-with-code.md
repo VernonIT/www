@@ -1,6 +1,6 @@
 +++
 title = "Decisions That Survive Contact With Code"
-date = 2026-03-23
+date = 2026-03-21
 draft = false
 tags = ["ai", "agents", "claude", "architecture", "go", "software-factory"]
 categories = ["development", "ai"]

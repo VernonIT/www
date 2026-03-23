@@ -1,6 +1,6 @@
 +++
 title = "What If Your AI Agents Were a Consultancy?"
-date = 2026-03-23
+date = 2026-03-22
 draft = false
 tags = ["ai", "agents", "claude", "architecture", "software-factory"]
 categories = ["development", "ai"]
