@@ -1,0 +1,56 @@
+<svg width="680" viewBox="0 0 680 520" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+
+<!-- Title -->
+<text x="40" y="30" font-weight="500" font-size="14" fill="#2C2C2A">halalifarm/</text>
+
+<!-- Factory core -->
+<rect x="40" y="48" width="280" height="200" rx="12" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="60" y="72" font-weight="500" font-size="14" fill="#3C3489">Factory core</text>
+<text x="60" y="96" font-size="12" fill="#534AB7">agents/</text>
+<text x="80" y="114" font-size="12" fill="#534AB7">pm.md</text>
+<text x="80" y="132" font-size="12" fill="#534AB7">architect.md</text>
+<text x="80" y="150" font-size="12" fill="#534AB7">security.md</text>
+<text x="80" y="168" font-size="12" fill="#534AB7">engineer.md</text>
+<text x="80" y="186" font-size="12" fill="#534AB7">qa.md</text>
+<text x="80" y="204" font-size="12" fill="#534AB7">ops.md</text>
+<text x="60" y="228" font-size="12" fill="#534AB7">skills/</text>
+
+<!-- Orchestration -->
+<rect x="360" y="48" width="280" height="130" rx="12" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="380" y="72" font-weight="500" font-size="14" fill="#085041">Orchestration</text>
+<text x="380" y="96" font-size="12" fill="#0F6E56">projects/registry.json</text>
+<text x="380" y="114" font-size="12" fill="#0F6E56">commands/</text>
+<text x="400" y="132" font-size="12" fill="#0F6E56">switch.md</text>
+<text x="400" y="150" font-size="12" fill="#0F6E56">pitch.md</text>
+<text x="380" y="168" font-size="12" fill="#0F6E56">CLAUDE.md</text>
+
+<!-- Self-referential docs -->
+<rect x="360" y="200" width="280" height="110" rx="12" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text x="380" y="224" font-weight="500" font-size="14" fill="#633806">docs/ (halalifarm-as-project)</text>
+<text x="380" y="248" font-size="12" fill="#854F0B">project-brief.md</text>
+<text x="380" y="266" font-size="12" fill="#854F0B">tasks/backlog.md</text>
+<text x="380" y="284" font-size="12" fill="#854F0B">decisions/</text>
+
+<!-- Templates -->
+<rect x="40" y="270" width="280" height="90" rx="12" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="60" y="294" font-weight="500" font-size="14" fill="#444441">templates/</text>
+<text x="60" y="318" font-size="12" fill="#5F5E5A">project-brief-template.md</text>
+<text x="60" y="336" font-size="12" fill="#5F5E5A">backlog-template.md</text>
+
+<!-- External projects -->
+<text x="40" y="400" font-weight="500" font-size="14" fill="#2C2C2A">External project workspaces</text>
+
+<rect x="40" y="416" width="190" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="135" y="438" text-anchor="middle" font-weight="500" font-size="14" fill="#0C447C">~/projects/dashcode</text>
+<text x="135" y="456" text-anchor="middle" font-size="12" fill="#185FA5">docs/ src/ tests/</text>
+
+<rect x="250" y="416" width="170" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="335" y="438" text-anchor="middle" font-weight="500" font-size="14" fill="#0C447C">~/projects/1lid</text>
+<text x="335" y="456" text-anchor="middle" font-size="12" fill="#185FA5">docs/ src/ tests/</text>
+
+<rect x="440" y="416" width="170" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="525" y="438" text-anchor="middle" font-weight="500" font-size="14" fill="#0C447C">~/projects/vida</text>
+<text x="525" y="456" text-anchor="middle" font-size="12" fill="#185FA5">docs/ src/ tests/</text>
+
+<text x="340" y="500" text-anchor="middle" font-size="12" fill="#5F5E5A">Product projects follow the same docs/ structure as halalifarm's own docs/</text>
+</svg>
