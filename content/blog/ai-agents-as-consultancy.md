@@ -1,7 +1,7 @@
 ---
 title: "What If Your AI Agents Were a Consultancy?"
 date: 2026-03-20
-draft: true
+draft: false
 tags: ["ai", "agents", "claude", "architecture", "software-factory"]
 categories: ["development", "ai"]
 description: "Building a multi-agent software factory with Claude — Part 1 of 3. The mental model that unlocked the architecture: the factory is the firm, each product is a client, and the agents are the staff."

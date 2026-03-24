@@ -1,7 +1,7 @@
 ---
 title: "Bootstrapping a Factory That Builds Itself"
 date: 2026-03-22
-draft: true
+draft: false
 tags: ["ai", "agents", "claude", "go", "cli", "software-factory"]
 categories: ["development", "ai"]
 description: "Building a multi-agent software factory with Claude — Part 3 of 3. Writing the Go CLI that ties it all together: types, state machines, DAGs, and a full end-to-end test."

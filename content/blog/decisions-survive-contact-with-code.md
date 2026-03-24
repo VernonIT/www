@@ -1,7 +1,7 @@
 ---
 title: "Decisions That Survive Contact With Code"
 date: 2026-03-21
-draft: true
+draft: false
 tags: ["ai", "agents", "claude", "architecture", "go", "software-factory"]
 categories: ["development", "ai"]
 description: "Building a multi-agent software factory with Claude — Part 2 of 3. The six architectural decisions that had to be right before writing a single line of code."
