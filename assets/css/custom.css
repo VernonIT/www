@@ -130,6 +130,18 @@ form button[type="submit"]:hover {
   background-color: #1d4ed8;
 }
 
+/* Homepage — Recent Articles section heading */
+.recent-articles-header {
+  margin-top: 5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dark .recent-articles-header {
+  border-bottom-color: #404040;
+}
+
 /* Blog listing — card grid (#44) */
 .blog-card-grid {
   display: grid;

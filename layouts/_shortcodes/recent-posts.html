@@ -17,7 +17,7 @@
       <h3 class="blog-card-title">
         <a href="{{ $post.RelPermalink }}">{{ $post.Title }}</a>
       </h3>
-      <p class="blog-card-excerpt">{{ $post.Summary | truncate 120 "…" }}</p>
+      <p class="blog-card-excerpt">{{- partial "utils/page-description" $post -}}</p>
       <a class="blog-card-read-more" href="{{ $post.RelPermalink }}">Read more →</a>
     </div>
   </article>

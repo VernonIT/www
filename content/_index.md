@@ -28,7 +28,7 @@ From writing code to leading teams to architecting systems&nbsp;<br class="sm:bl
   {{< hextra/feature-card icon="code" title="Software Engineering" subtitle="Full-lifecycle product and platform engineering." >}}
 {{< /hextra/feature-grid >}}
 
-<div class="mt-12 mb-4">
+<div class="recent-articles-header">
 
 ## Recent Articles
 
