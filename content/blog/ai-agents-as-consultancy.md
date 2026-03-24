@@ -6,8 +6,8 @@ tags: ["ai", "agents", "claude", "architecture", "software-factory"]
 categories: ["development", "ai"]
 description: "Building a multi-agent software factory with Claude — Part 1 of 3. The mental model that unlocked the architecture: the factory is the firm, each product is a client, and the agents are the staff."
 cover:
-  image: "/images/halalifarm/halalifarm_factory_architecture.svg"
-  alt: "Halalifarm factory architecture diagram"
+  image: "https://images.unsplash.com/photo-1565728744382-61accd4aa148?w=1200&q=80"
+  alt: "Consultant presenting in a conference room"
 ---
 
 *Building a multi-agent software factory with Claude — Part 1 of 3*
@@ -42,7 +42,7 @@ The mental model finally locked in when Claude described it as a consultancy:
 
 > "Halalifarm is the firm. Your projects are the clients. Each client has its own folder, its own brief, its own backlog. The agents are the staff who move between clients but always know which client they're currently working for."
 
-<!-- INSERT IMAGE: halalifarm_factory_architecture.svg -->
+![Halalifarm factory architecture diagram](/images/halalifarm/halalifarm_factory_architecture.svg)
 
 This diagram shows the full picture. You pitch an idea to the factory. The PM agent receives it, consults with SME agents, and produces a plan. The project registry tracks all active projects. And each project lives in its own separate workspace — completely decoupled from the factory itself.
 
@@ -75,7 +75,7 @@ Think of it like a construction company that renovates its own office. Same blue
 
 The thing that makes the factory/product separation work is physical. Halalifarm never has a `src/` directory. It's pure orchestration — agent definitions, the registry, templates, and commands. The moment any agent starts writing code, they're doing it in the project workspace, not in halalifarm.
 
-<!-- INSERT IMAGE: halalifarm_directory_structure.svg -->
+![Halalifarm directory structure](/images/halalifarm/halalifarm_directory_structure.svg)
 
 Every product project follows the same directory structure. The `templates/` directory inside halalifarm holds the standard layout that gets stamped into every new project. And the agent definitions live at the top level, separate from project-specific work.
 

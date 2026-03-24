@@ -6,8 +6,8 @@ tags: ["ai", "agents", "claude", "go", "cli", "software-factory"]
 categories: ["development", "ai"]
 description: "Building a multi-agent software factory with Claude — Part 3 of 3. Writing the Go CLI that ties it all together: types, state machines, DAGs, and a full end-to-end test."
 cover:
-  image: "/images/halalifarm/halalifarm_directory_structure.svg"
-  alt: "Halalifarm directory structure"
+  image: "https://images.unsplash.com/photo-1681415863380-2c261e9e83a4?w=1200&q=80"
+  alt: "Close-up of a red Lego brick"
 ---
 
 *Building a multi-agent software factory with Claude — Part 3 of 3*
@@ -61,6 +61,8 @@ halalifarm/
 └── projects/              # Registry storage
     └── registry.json
 ```
+
+![Halalifarm directory structure](/images/halalifarm/halalifarm_directory_structure.svg)
 
 The `internal/` layout follows standard Go conventions — each package has a single responsibility. The `factory` package is the glue that ties them together.
 

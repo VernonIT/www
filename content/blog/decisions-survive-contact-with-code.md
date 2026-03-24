@@ -6,8 +6,8 @@ tags: ["ai", "agents", "claude", "architecture", "go", "software-factory"]
 categories: ["development", "ai"]
 description: "Building a multi-agent software factory with Claude — Part 2 of 3. The six architectural decisions that had to be right before writing a single line of code."
 cover:
-  image: "/images/halalifarm/architectural_decisions_priority_map.svg"
-  alt: "Architectural decisions priority map"
+  image: "https://images.unsplash.com/photo-1764105720608-2dc0dfbaeeb3?w=1200&q=80"
+  alt: "Chess pieces on a dark background"
 ---
 
 *Building a multi-agent software factory with Claude — Part 2 of 3*
