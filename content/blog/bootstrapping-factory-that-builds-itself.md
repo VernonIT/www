@@ -1,14 +1,14 @@
-+++
-title = "Bootstrapping a Factory That Builds Itself"
-date = 2026-03-20
-draft = false
-tags = ["ai", "agents", "claude", "go", "cli", "software-factory"]
-categories = ["development", "ai"]
-description = "Building a multi-agent software factory with Claude — Part 3 of 3. Writing the Go CLI that ties it all together: types, state machines, DAGs, and a full end-to-end test."
-[cover]
-  image = "/images/halalifarm/halalifarm_directory_structure.svg"
-  alt = "Halalifarm directory structure"
-+++
+---
+title: "Bootstrapping a Factory That Builds Itself"
+date: 2026-03-22
+draft: true
+tags: ["ai", "agents", "claude", "go", "cli", "software-factory"]
+categories: ["development", "ai"]
+description: "Building a multi-agent software factory with Claude — Part 3 of 3. Writing the Go CLI that ties it all together: types, state machines, DAGs, and a full end-to-end test."
+cover:
+  image: "/images/halalifarm/halalifarm_directory_structure.svg"
+  alt: "Halalifarm directory structure"
+---
 
 *Building a multi-agent software factory with Claude — Part 3 of 3*
 
@@ -22,7 +22,7 @@ The goal: a Go CLI called `halalifarm` (aliased to `hf`) that can initialize a f
 
 A few reasons fell out of the design conversation:
 
-- **Single binary, no runtime dependencies.** I don't want to debug Node version conflicts when I'm trying to ship a recipe app.
+- **Single binary, no runtime dependencies.** I don't want to debug Node version conflicts when I'm trying to ship a family cookbook app.
 - **Goroutines for future parallelism.** When the DAG says two tasks are independent, spawning them concurrently is trivial.
 - **The Anthropic SDK exists for Go.** (And so do OpenAI and Gemini SDKs.) The provider interface maps cleanly.
 - **I already work in Go.** Using a familiar language for the orchestration layer means I can focus on the hard problems (agent coordination, context management) instead of fighting syntax.
@@ -188,12 +188,12 @@ From the very first command, the factory is a project in its own registry.
 Takes a description, derives a project name, scaffolds the workspace, stamps in the project brief template with the date filled in, and auto-switches to the new project:
 
 ```
-$ hf pitch "offline-first halal recipe manager"
-📋 Pitching: "offline-first halal recipe manager"
-   Project name: offline-first-halal-recipe
+$ hf pitch "family cookbook app"
+📋 Pitching: "family cookbook app"
+   Project name: family-cookbook-app
 ✓ Project created and activated
-  Workspace: ~/projects/offline-first-halal-recipe
-  Brief:     ~/projects/offline-first-halal-recipe/docs/project-brief.md
+  Workspace: ~/projects/family-cookbook-app
+  Brief:     ~/projects/family-cookbook-app/docs/project-brief.md
 ```
 
 Right now it just creates the skeleton. Once the Anthropic provider is wired up, this command will invoke the PM agent to actually flesh out the brief — ask clarifying questions, consult the Architect and Security agents, and produce a task backlog.
@@ -205,7 +205,7 @@ Lists everything in the registry with the active project marked:
 ```
 $ hf projects
   halalifarm               factory-meta drafting   $0.00
-▸ offline-first-halal-recipe product      drafting   $0.00
+▸ family-cookbook-app product      drafting   $0.00
 ```
 
 ### `hf cost`
@@ -214,7 +214,7 @@ Queries the token ledger with optional filters:
 
 ```
 $ hf cost --today
-$ hf cost --project dashcode
+$ hf cost --project family-cookbook-app
 ```
 
 Currently reports "No LLM calls recorded yet" — which is accurate! Once providers are connected, this becomes the dashboard for understanding where your money is going.
@@ -237,14 +237,14 @@ Workspace: /tmp/test-factory
 Cost (month): $0.00
 Cost (today): $0.00
 
-$ hf pitch "offline-first halal recipe manager"
-📋 Pitching: "offline-first halal recipe manager"
-   Project name: offline-first-halal-recipe
+$ hf pitch "family cookbook app"
+📋 Pitching: "family cookbook app"
+   Project name: family-cookbook-app
 ✓ Project created and activated
 
 $ hf projects
   halalifarm               factory-meta drafting   $0.00
-▸ offline-first-halal-recipe product      drafting   $0.00
+▸ family-cookbook-app product      drafting   $0.00
 
 $ hf switch halalifarm
 ✓ Switched to project: halalifarm

@@ -1,14 +1,14 @@
-+++
-title = "Decisions That Survive Contact With Code"
-date = 2026-03-21
-draft = false
-tags = ["ai", "agents", "claude", "architecture", "go", "software-factory"]
-categories = ["development", "ai"]
-description = "Building a multi-agent software factory with Claude — Part 2 of 3. The six architectural decisions that had to be right before writing a single line of code."
-[cover]
-  image = "/images/halalifarm/architectural_decisions_priority_map.svg"
-  alt = "Architectural decisions priority map"
-+++
+---
+title: "Decisions That Survive Contact With Code"
+date: 2026-03-21
+draft: true
+tags: ["ai", "agents", "claude", "architecture", "go", "software-factory"]
+categories: ["development", "ai"]
+description: "Building a multi-agent software factory with Claude — Part 2 of 3. The six architectural decisions that had to be right before writing a single line of code."
+cover:
+  image: "/images/halalifarm/architectural_decisions_priority_map.svg"
+  alt: "Architectural decisions priority map"
+---
 
 *Building a multi-agent software factory with Claude — Part 2 of 3*
 
@@ -34,7 +34,7 @@ The left column touches the core data structures and interfaces that everything 
 
 When the PM consults the Architect and Security agent during planning, how does that conversation happen?
 
-I initially thought about having them all talk through Slack. Claude's counterpoint was practical: bolting Slack into the critical path adds an external dependency that can fail, and it's overkill for the initial version. But the real insight came when I mentioned shared documents and immediately worried about race conditions:
+I was half joking when I suggested connecting them all to Slack, but the more I thought about it, it kinda made sense. Claude's counterpoint, however, was practical: bolting Slack into the critical path adds an external dependency that can fail, and it's overkill for the initial version. Claude suggested writing to a file and I thought while processes are running serially this might be fine but we will surely have race conditions as we speed things up:
 
 > "What happens when everyone writes all at once?"
 
@@ -124,7 +124,9 @@ Now you can ask: "Which context layer is eating the most tokens? Is loading all 
 
 ## Decision 4: The Task State Machine
 
-Tasks need states. The question is how many. My initial instinct was to keep it minimal, but Claude made a good point: there's no meaningful cost to having more states. A state machine is just a string field and a transition table.
+Tasks need states. The question is how many. My instinct was more — a state is a word that carries a lot of meaning without a lot of explanation. If the whole point of the factory is to manage work, then the richer your state vocabulary, the more the system can tell you at a glance. I asked Claude whether there was any real cost to having more states — not dollar cost, but hidden complexity I hadn't considered.
+
+The answer: not really. A state machine is just a string field and a transition table. The cost of adding a state is tiny; the cost of *not* having one when you need it — hunting through logs to figure out why a task stopped moving — is much higher.
 
 So we went with the full set:
 
