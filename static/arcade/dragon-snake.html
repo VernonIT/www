@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Dragon Snake</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -132,6 +132,7 @@ const BG_STYLE = {
   fontFamily: "'Segoe UI', system-ui, sans-serif", color: "#e8e0f0", padding: 20,
 };
 
+// ─── CHARACTER SELECT ───
 function CharacterSelect({ onSelect }) {
   const [selected, setSelected] = useState(null);
   const [hovered, setHovered] = useState(null);
@@ -204,6 +205,7 @@ function CharacterSelect({ onSelect }) {
   );
 }
 
+// ─── GAME OVER ───
 function GameOverScreen({ score, length, highScore, isNewHigh, onRestart }) {
   return (
     <div style={BG_STYLE}>
@@ -247,9 +249,10 @@ function GameOverScreen({ score, length, highScore, isNewHigh, onRestart }) {
   );
 }
 
-function DeathOverlay({ livesLeft, reason }) {
+// ─── DEATH OVERLAY ───
+function DeathOverlay({ livesLeft, reason, onResume }) {
   return (
-    <div style={{
+    <div onClick={onResume} onTouchStart={(e) => { e.preventDefault(); onResume(); }} style={{
       position: "absolute", inset: 0, zIndex: 200,
       background: "rgba(10, 5, 15, 0.85)", display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center", borderRadius: 4,
@@ -270,12 +273,13 @@ function DeathOverlay({ livesLeft, reason }) {
       <div style={{
         fontSize: 13, color: "#8a7fa0", letterSpacing: 1,
         animation: "pulse 1.5s ease-in-out infinite",
-      }}>Press any key to continue</div>
+      }}>Press any key or tap to continue</div>
       <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
     </div>
   );
 }
 
+// ─── GAME BOARD ───
 function GameBoard({ head, highScore, setHighScore, onGameOver }) {
   const makeStartSnake = () => [
     { x: 5, y: 12, color: "#ffd700" },
@@ -352,6 +356,8 @@ function GameBoard({ head, highScore, setHighScore, onGameOver }) {
     }
   }, [highScore, setHighScore]);
 
+  const resumeAfterDeathRef = useRef(null);
+
   const resumeAfterDeath = useCallback(() => {
     if (!deathPauseRef.current) return;
     const newSnake = makeStartSnake();
@@ -366,6 +372,18 @@ function GameBoard({ head, highScore, setHighScore, onGameOver }) {
     setDeathReason("");
   }, []);
 
+  useEffect(() => { resumeAfterDeathRef.current = resumeAfterDeath; }, [resumeAfterDeath]);
+
+  // Shared input handler for keyboard, swipe, d-pad
+  const pushDirection = useCallback((newDir) => {
+    if (deathPauseRef.current) {
+      resumeAfterDeathRef.current?.();
+      return;
+    }
+    queueRef.current.push(newDir);
+  }, []);
+
+  // Keyboard
   useEffect(() => {
     const keyMap = {
       ArrowUp: "UP", ArrowDown: "DOWN", ArrowLeft: "LEFT", ArrowRight: "RIGHT",
@@ -387,6 +405,44 @@ function GameBoard({ head, highScore, setHighScore, onGameOver }) {
     return () => window.removeEventListener("keydown", handler);
   }, [resumeAfterDeath]);
 
+  // Swipe gesture detection on the board
+  const touchStartRef = useRef(null);
+  const boardRef = useRef(null);
+  useEffect(() => {
+    const el = boardRef.current;
+    if (!el) return;
+    const onTouchStart = (e) => {
+      const t = e.touches[0];
+      touchStartRef.current = { x: t.clientX, y: t.clientY };
+    };
+    const onTouchEnd = (e) => {
+      if (!touchStartRef.current) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - touchStartRef.current.x;
+      const dy = t.clientY - touchStartRef.current.y;
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+      const MIN_SWIPE = 20;
+      if (Math.max(absDx, absDy) < MIN_SWIPE) {
+        if (deathPauseRef.current) resumeAfterDeath();
+        touchStartRef.current = null;
+        return;
+      }
+      let dir;
+      if (absDx > absDy) dir = dx > 0 ? "RIGHT" : "LEFT";
+      else dir = dy > 0 ? "DOWN" : "UP";
+      pushDirection(dir);
+      touchStartRef.current = null;
+    };
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [pushDirection, resumeAfterDeath]);
+
+  // Game tick
   useEffect(() => {
     if (gameOver || deathPause) return;
 
@@ -491,6 +547,13 @@ function GameBoard({ head, highScore, setHighScore, onGameOver }) {
   }
 
   const boardPx = GRID_SIZE * CELL_SIZE;
+  const dpadStyle = {
+    width: 60, height: 60, borderRadius: 12, border: "1px solid rgba(255,255,255,0.12)",
+    background: "rgba(255,255,255,0.06)", color: "#c0b8d0", fontSize: 18,
+    display: "flex", alignItems: "center", justifyContent: "center",
+    cursor: "pointer", userSelect: "none", WebkitTapHighlightColor: "transparent",
+    touchAction: "manipulation", letterSpacing: 0, fontWeight: 400,
+  };
   const wallCells = [];
   const gapCells = [];
   for (let i = 0; i < GRID_SIZE; i++) {
@@ -520,7 +583,14 @@ function GameBoard({ head, highScore, setHighScore, onGameOver }) {
         <span style={{ fontSize: 18 }}>{head.emoji}</span>
       </div>
 
-      <div style={{ position: "relative", width: boardPx, height: boardPx }}>
+      <div ref={boardRef} style={{
+        position: "relative", width: boardPx, height: boardPx, touchAction: "none",
+        maxWidth: "90vw", maxHeight: "90vw",
+        transform: typeof window !== "undefined" && window.innerWidth < boardPx + 40
+          ? `scale(${Math.min(1, (window.innerWidth - 40) / boardPx)})`
+          : "none",
+        transformOrigin: "top center",
+      }}>
         <div style={{
           position: "relative", width: boardPx, height: boardPx,
           background: "rgba(10, 10, 20, 0.9)", borderRadius: 4, overflow: "hidden",
@@ -590,11 +660,35 @@ function GameBoard({ head, highScore, setHighScore, onGameOver }) {
           <Particles particles={particles} />
         </div>
 
-        {deathPause && <DeathOverlay livesLeft={lives} reason={deathReason} />}
+        {deathPause && <DeathOverlay livesLeft={lives} reason={deathReason} onResume={resumeAfterDeath} />}
+      </div>
+
+      {/* D-Pad for mobile */}
+      <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "60px 60px 60px", gridTemplateRows: "60px 60px 60px", gap: 4, userSelect: "none" }}>
+        <div />
+        <button onTouchStart={(e) => { e.preventDefault(); pushDirection("UP"); }}
+          onClick={() => pushDirection("UP")}
+          style={dpadStyle}>▲</button>
+        <div />
+        <button onTouchStart={(e) => { e.preventDefault(); pushDirection("LEFT"); }}
+          onClick={() => pushDirection("LEFT")}
+          style={dpadStyle}>◀</button>
+        <div style={{
+          ...dpadStyle, background: "rgba(255,255,255,0.03)", fontSize: 10, color: "#5a5270",
+          cursor: "default", letterSpacing: 0,
+        }}>D-PAD</div>
+        <button onTouchStart={(e) => { e.preventDefault(); pushDirection("RIGHT"); }}
+          onClick={() => pushDirection("RIGHT")}
+          style={dpadStyle}>▶</button>
+        <div />
+        <button onTouchStart={(e) => { e.preventDefault(); pushDirection("DOWN"); }}
+          onClick={() => pushDirection("DOWN")}
+          style={dpadStyle}>▼</button>
+        <div />
       </div>
 
       <p style={{ color: "#5a5270", fontSize: 11, marginTop: 10, letterSpacing: 0.5 }}>
-        Arrow keys or WASD to move · Find the <span style={{ color: "#00e676" }}>green gap</span> to warp
+        Swipe, tap d-pad, or use arrow keys · Find the <span style={{ color: "#00e676" }}>green gap</span> to warp
       </p>
       <style>{`
         @keyframes gapPulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
@@ -604,6 +698,7 @@ function GameBoard({ head, highScore, setHighScore, onGameOver }) {
   );
 }
 
+// ─── MAIN APP ───
 function App() {
   const [screen, setScreen] = useState("select");
   const [selectedHead, setSelectedHead] = useState(null);
