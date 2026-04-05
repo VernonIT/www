@@ -20,9 +20,11 @@ const { useState, useEffect, useCallback, useRef } = React;
 
 const GRID_SIZE = 25;
 const CELL_SIZE = 22;
-const INITIAL_SPEED = 140;
-const MIN_SPEED = 80;
+const INITIAL_SPEED = 220;
+const MIN_SPEED = 100;
+const SPEED_STEP = 1.5;
 const GAP_WIDTH = 3;
+const TOTAL_LIVES = 3;
 
 const HEADS = [
   { id: "fox", emoji: "🦊", label: "Fox" },
@@ -51,7 +53,7 @@ const DIRS = {
 };
 
 const OPPOSITE = { UP: "DOWN", DOWN: "UP", LEFT: "RIGHT", RIGHT: "LEFT" };
-const WALLS = ["top", "bottom", "left", "right"];
+const WALLS_LIST = ["top", "bottom", "left", "right"];
 
 function randomFruit() {
   return FRUITS[Math.floor(Math.random() * FRUITS.length)];
@@ -60,7 +62,7 @@ function randomFruit() {
 function randomGap(excludeWall) {
   let wall;
   do {
-    wall = WALLS[Math.floor(Math.random() * 4)];
+    wall = WALLS_LIST[Math.floor(Math.random() * 4)];
   } while (wall === excludeWall);
   const maxPos = GRID_SIZE - GAP_WIDTH - 2;
   const pos = Math.floor(Math.random() * maxPos) + 1;
@@ -79,14 +81,19 @@ function isInGap(x, y, gap) {
 
 function getWrapPosition(x, y, gap) {
   const { wall } = gap;
-  if (wall === "top" || wall === "bottom") {
-    return { x, y: wall === "top" ? GRID_SIZE - 1 : 0 };
-  }
-  return { x: wall === "left" ? GRID_SIZE - 1 : 0, y };
+  if (wall === "top") return { x, y: GRID_SIZE - 2 };
+  if (wall === "bottom") return { x, y: 1 };
+  if (wall === "left") return { x: GRID_SIZE - 2, y };
+  if (wall === "right") return { x: 1, y };
+  return { x, y };
 }
 
-function isWall(x, y) {
+function isOutOfBounds(x, y) {
   return x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE;
+}
+
+function isOnWall(x, y) {
+  return x === 0 || x === GRID_SIZE - 1 || y === 0 || y === GRID_SIZE - 1;
 }
 
 function spawnFruit(snake) {
@@ -109,30 +116,28 @@ function Particles({ particles }) {
         position: "absolute",
         left: p.x * CELL_SIZE + CELL_SIZE / 2 + p.ox,
         top: p.y * CELL_SIZE + CELL_SIZE / 2 + p.oy,
-        width: 6,
-        height: 6,
-        borderRadius: "50%",
-        backgroundColor: p.color,
-        opacity: p.life,
+        width: 6, height: 6, borderRadius: "50%",
+        backgroundColor: p.color, opacity: p.life,
         transform: `scale(${p.life})`,
         transition: "all 0.3s ease-out",
-        pointerEvents: "none",
-        zIndex: 100,
+        pointerEvents: "none", zIndex: 100,
       }}
     />
   ));
 }
+
+const BG_STYLE = {
+  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+  minHeight: "100vh", background: "linear-gradient(165deg, #0a0a12 0%, #12121f 40%, #1a0a1e 100%)",
+  fontFamily: "'Segoe UI', system-ui, sans-serif", color: "#e8e0f0", padding: 20,
+};
 
 function CharacterSelect({ onSelect }) {
   const [selected, setSelected] = useState(null);
   const [hovered, setHovered] = useState(null);
 
   return (
-    <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      minHeight: "100vh", background: "linear-gradient(165deg, #0a0a12 0%, #12121f 40%, #1a0a1e 100%)",
-      fontFamily: "'Segoe UI', system-ui, sans-serif", color: "#e8e0f0", padding: 20,
-    }}>
+    <div style={BG_STYLE}>
       <div style={{
         fontSize: 48, marginBottom: 4, filter: "drop-shadow(0 0 20px rgba(255,180,50,0.4))",
         animation: "float 3s ease-in-out infinite",
@@ -152,23 +157,18 @@ function CharacterSelect({ onSelect }) {
           const isSel = selected === h.id;
           const isHov = hovered === h.id;
           return (
-            <div
-              key={h.id}
-              onClick={() => setSelected(h.id)}
-              onMouseEnter={() => setHovered(h.id)}
-              onMouseLeave={() => setHovered(null)}
+            <div key={h.id} onClick={() => setSelected(h.id)}
+              onMouseEnter={() => setHovered(h.id)} onMouseLeave={() => setHovered(null)}
               style={{
                 width: 100, height: 110, display: "flex", flexDirection: "column",
                 alignItems: "center", justifyContent: "center", gap: 6,
                 borderRadius: 16, cursor: "pointer", transition: "all 0.25s ease",
-                background: isSel
-                  ? "linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,100,50,0.15))"
+                background: isSel ? "linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,100,50,0.15))"
                   : isHov ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.03)",
                 border: isSel ? "2px solid #ffd700" : "2px solid rgba(255,255,255,0.08)",
                 transform: isSel ? "scale(1.1)" : isHov ? "scale(1.05)" : "scale(1)",
                 boxShadow: isSel ? "0 0 24px rgba(255,215,0,0.3)" : "none",
-              }}
-            >
+              }}>
               <span style={{ fontSize: 40 }}>{h.emoji}</span>
               <span style={{
                 fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase",
@@ -179,23 +179,17 @@ function CharacterSelect({ onSelect }) {
         })}
       </div>
 
-      <button
-        disabled={!selected}
+      <button disabled={!selected}
         onClick={() => selected && onSelect(HEADS.find((h) => h.id === selected))}
         style={{
           padding: "14px 48px", fontSize: 16, fontWeight: 700, letterSpacing: 2,
-          textTransform: "uppercase", border: "none", borderRadius: 12, cursor: selected ? "pointer" : "not-allowed",
-          background: selected
-            ? "linear-gradient(135deg, #ffd700, #ff6b35)"
-            : "rgba(255,255,255,0.08)",
+          textTransform: "uppercase", border: "none", borderRadius: 12,
+          cursor: selected ? "pointer" : "not-allowed",
+          background: selected ? "linear-gradient(135deg, #ffd700, #ff6b35)" : "rgba(255,255,255,0.08)",
           color: selected ? "#0a0a12" : "#555",
           boxShadow: selected ? "0 4px 24px rgba(255,180,50,0.4)" : "none",
-          transition: "all 0.3s ease",
-          transform: selected ? "scale(1)" : "scale(0.95)",
-        }}
-      >
-        Begin Hunt
-      </button>
+          transition: "all 0.3s ease", transform: selected ? "scale(1)" : "scale(0.95)",
+        }}>Begin Hunt</button>
 
       <div style={{ marginTop: 32, display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
         {FRUITS.map((f) => (
@@ -205,40 +199,26 @@ function CharacterSelect({ onSelect }) {
       <p style={{ color: "#5a5270", fontSize: 11, marginTop: 8, letterSpacing: 0.5 }}>
         Eat fruit to paint your dragon's tail
       </p>
-
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
-        }
-      `}</style>
+      <style>{`@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }`}</style>
     </div>
   );
 }
 
-function GameOver({ score, length, highScore, isNewHigh, onRestart }) {
+function GameOverScreen({ score, length, highScore, isNewHigh, onRestart }) {
   return (
-    <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      minHeight: "100vh", background: "linear-gradient(165deg, #0a0a12 0%, #12121f 40%, #1a0a1e 100%)",
-      fontFamily: "'Segoe UI', system-ui, sans-serif", color: "#e8e0f0", padding: 20,
-    }}>
+    <div style={BG_STYLE}>
       {isNewHigh && (
         <div style={{
           fontSize: 14, fontWeight: 700, color: "#ffd700", letterSpacing: 3,
           textTransform: "uppercase", marginBottom: 12,
           textShadow: "0 0 20px rgba(255,215,0,0.6)",
           animation: "pulse 1.5s ease-in-out infinite",
-        }}>
-          ✨ New High Score! ✨
-        </div>
+        }}>✨ New High Score! ✨</div>
       )}
-
       <h1 style={{
         fontSize: 32, fontWeight: 800, margin: "0 0 24px",
         color: "#ff4757", textTransform: "uppercase", letterSpacing: 3,
       }}>Game Over</h1>
-
       <div style={{ display: "flex", gap: 24, marginBottom: 32 }}>
         {[
           { label: "Score", value: score, color: "#ffd700" },
@@ -256,66 +236,134 @@ function GameOver({ score, length, highScore, isNewHigh, onRestart }) {
           </div>
         ))}
       </div>
-
-      <button
-        onClick={onRestart}
-        style={{
-          padding: "14px 48px", fontSize: 16, fontWeight: 700, letterSpacing: 2,
-          textTransform: "uppercase", border: "none", borderRadius: 12, cursor: "pointer",
-          background: "linear-gradient(135deg, #ffd700, #ff6b35)",
-          color: "#0a0a12",
-          boxShadow: "0 4px 24px rgba(255,180,50,0.4)",
-          transition: "all 0.2s ease",
-        }}
-      >
-        Play Again
-      </button>
-
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.6; }
-        }
-      `}</style>
+      <button onClick={onRestart} style={{
+        padding: "14px 48px", fontSize: 16, fontWeight: 700, letterSpacing: 2,
+        textTransform: "uppercase", border: "none", borderRadius: 12, cursor: "pointer",
+        background: "linear-gradient(135deg, #ffd700, #ff6b35)", color: "#0a0a12",
+        boxShadow: "0 4px 24px rgba(255,180,50,0.4)", transition: "all 0.2s ease",
+      }}>Play Again</button>
+      <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }`}</style>
     </div>
   );
 }
 
-function GameBoard({ head, highScore, setHighScore }) {
-  const startSnake = [
+function DeathOverlay({ livesLeft, reason }) {
+  return (
+    <div style={{
+      position: "absolute", inset: 0, zIndex: 200,
+      background: "rgba(10, 5, 15, 0.85)", display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center", borderRadius: 4,
+    }}>
+      <div style={{ fontSize: 36, marginBottom: 8 }}>💀</div>
+      <div style={{
+        fontSize: 18, fontWeight: 700, color: "#ff4757", textTransform: "uppercase",
+        letterSpacing: 2, marginBottom: 6,
+      }}>{reason}</div>
+      <div style={{ fontSize: 14, color: "#ffab91", marginBottom: 16 }}>
+        {livesLeft === 1 ? "1 life remaining" : `${livesLeft} lives remaining`}
+      </div>
+      <div style={{ display: "flex", gap: 6, marginBottom: 20 }}>
+        {Array.from({ length: TOTAL_LIVES }, (_, i) => (
+          <span key={i} style={{ fontSize: 20, opacity: i < livesLeft ? 1 : 0.2 }}>❤️</span>
+        ))}
+      </div>
+      <div style={{
+        fontSize: 13, color: "#8a7fa0", letterSpacing: 1,
+        animation: "pulse 1.5s ease-in-out infinite",
+      }}>Press any key to continue</div>
+      <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
+    </div>
+  );
+}
+
+function GameBoard({ head, highScore, setHighScore, onGameOver }) {
+  const makeStartSnake = () => [
     { x: 5, y: 12, color: "#ffd700" },
     { x: 4, y: 12, color: "#ffb700" },
     { x: 3, y: 12, color: "#ff9500" },
   ];
 
-  const [snake, setSnake] = useState(startSnake);
+  const [snake, setSnake] = useState(makeStartSnake);
   const [dir, setDir] = useState("RIGHT");
-  const [fruit, setFruit] = useState(() => spawnFruit(startSnake));
+  const [fruit, setFruit] = useState(() => spawnFruit(makeStartSnake()));
   const [gap, setGap] = useState(() => randomGap(null));
   const [score, setScore] = useState(0);
-  const [dead, setDead] = useState(false);
+  const [lives, setLives] = useState(TOTAL_LIVES);
+  const [deathPause, setDeathPause] = useState(false);
+  const [deathReason, setDeathReason] = useState("");
+  const [gameOver, setGameOver] = useState(false);
   const [particles, setParticles] = useState([]);
   const [flash, setFlash] = useState(false);
 
-  const dirRef = useRef(dir);
+  const dirRef = useRef("RIGHT");
   const queueRef = useRef([]);
-  const snakeRef = useRef(snake);
-  const fruitRef = useRef(fruit);
-  const gapRef = useRef(gap);
-  const scoreRef = useRef(score);
-  const deadRef = useRef(dead);
+  const snakeRef = useRef(makeStartSnake());
+  const fruitRef = useRef(null);
+  const gapRef = useRef(null);
+  const scoreRef = useRef(0);
+  const livesRef = useRef(TOTAL_LIVES);
   const tickRef = useRef(null);
   const particleIdRef = useRef(0);
+  const deathPauseRef = useRef(false);
 
-  dirRef.current = dir;
-  snakeRef.current = snake;
-  fruitRef.current = fruit;
-  gapRef.current = gap;
-  scoreRef.current = score;
-  deadRef.current = dead;
+  useEffect(() => { fruitRef.current = fruit; }, [fruit]);
+  useEffect(() => { gapRef.current = gap; }, [gap]);
+  useEffect(() => { deathPauseRef.current = deathPause; }, [deathPause]);
 
   const getSpeed = useCallback(() => {
-    return Math.max(MIN_SPEED, INITIAL_SPEED - scoreRef.current * 2);
+    return Math.max(MIN_SPEED, INITIAL_SPEED - scoreRef.current * SPEED_STEP);
+  }, []);
+
+  const spawnParticles = useCallback((x, y, color) => {
+    const newP = [];
+    for (let i = 0; i < 8; i++) {
+      const angle = (Math.PI * 2 * i) / 8;
+      newP.push({
+        id: particleIdRef.current++, x, y, color,
+        ox: Math.cos(angle) * 18, oy: Math.sin(angle) * 18, life: 1,
+      });
+    }
+    setParticles((prev) => [...prev, ...newP]);
+    setTimeout(() => {
+      setParticles((prev) => prev.map((p) =>
+        newP.find((n) => n.id === p.id) ? { ...p, life: 0, ox: p.ox * 2.5, oy: p.oy * 2.5 } : p
+      ));
+    }, 30);
+    setTimeout(() => {
+      const ids = new Set(newP.map((n) => n.id));
+      setParticles((prev) => prev.filter((p) => !ids.has(p.id)));
+    }, 350);
+  }, []);
+
+  const handleDeath = useCallback((reason) => {
+    clearTimeout(tickRef.current);
+    const newLives = livesRef.current - 1;
+    livesRef.current = newLives;
+    setLives(newLives);
+
+    if (newLives <= 0) {
+      const finalScore = scoreRef.current;
+      if (finalScore > highScore) setHighScore(finalScore);
+      setGameOver(true);
+    } else {
+      setDeathReason(reason);
+      setDeathPause(true);
+      deathPauseRef.current = true;
+    }
+  }, [highScore, setHighScore]);
+
+  const resumeAfterDeath = useCallback(() => {
+    if (!deathPauseRef.current) return;
+    const newSnake = makeStartSnake();
+    snakeRef.current = newSnake;
+    setSnake(newSnake);
+    dirRef.current = "RIGHT";
+    setDir("RIGHT");
+    queueRef.current = [];
+    setGap(randomGap(null));
+    setDeathPause(false);
+    deathPauseRef.current = false;
+    setDeathReason("");
   }, []);
 
   useEffect(() => {
@@ -325,6 +373,11 @@ function GameBoard({ head, highScore, setHighScore }) {
       W: "UP", S: "DOWN", A: "LEFT", D: "RIGHT",
     };
     const handler = (e) => {
+      if (deathPauseRef.current) {
+        e.preventDefault();
+        resumeAfterDeath();
+        return;
+      }
       const newDir = keyMap[e.key];
       if (!newDir) return;
       e.preventDefault();
@@ -332,34 +385,14 @@ function GameBoard({ head, highScore, setHighScore }) {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
-
-  const spawnParticles = useCallback((x, y, color) => {
-    const newP = [];
-    for (let i = 0; i < 8; i++) {
-      const angle = (Math.PI * 2 * i) / 8;
-      newP.push({
-        id: particleIdRef.current++,
-        x, y, color,
-        ox: Math.cos(angle) * 18,
-        oy: Math.sin(angle) * 18,
-        life: 1,
-      });
-    }
-    setParticles((prev) => [...prev, ...newP]);
-    setTimeout(() => {
-      setParticles((prev) => prev.map((p) => newP.find((n) => n.id === p.id) ? { ...p, life: 0, ox: p.ox * 2.5, oy: p.oy * 2.5 } : p));
-    }, 30);
-    setTimeout(() => {
-      const ids = new Set(newP.map((n) => n.id));
-      setParticles((prev) => prev.filter((p) => !ids.has(p.id)));
-    }, 350);
-  }, []);
+  }, [resumeAfterDeath]);
 
   useEffect(() => {
-    if (dead) return;
+    if (gameOver || deathPause) return;
 
     const tick = () => {
+      if (deathPauseRef.current) return;
+
       let currentDir = dirRef.current;
       while (queueRef.current.length > 0) {
         const nextDir = queueRef.current.shift();
@@ -368,20 +401,19 @@ function GameBoard({ head, highScore, setHighScore }) {
           break;
         }
       }
-      setDir(currentDir);
       dirRef.current = currentDir;
+      setDir(currentDir);
 
       const s = snakeRef.current;
       const headPos = s[0];
       const delta = DIRS[currentDir];
       let nx = headPos.x + delta.x;
       let ny = headPos.y + delta.y;
-
       const g = gapRef.current;
-      if (isWall(nx, ny)) {
-        const wallX = nx < 0 ? 0 : nx >= GRID_SIZE ? GRID_SIZE - 1 : nx;
-        const wallY = ny < 0 ? 0 : ny >= GRID_SIZE ? GRID_SIZE - 1 : ny;
 
+      if (isOutOfBounds(nx, ny)) {
+        const wallX = Math.max(0, Math.min(GRID_SIZE - 1, nx));
+        const wallY = Math.max(0, Math.min(GRID_SIZE - 1, ny));
         if (isInGap(wallX, wallY, g)) {
           const wrapped = getWrapPosition(wallX, wallY, g);
           nx = wrapped.x;
@@ -390,20 +422,26 @@ function GameBoard({ head, highScore, setHighScore }) {
           setGap(newGap);
           gapRef.current = newGap;
         } else {
-          setDead(true);
-          deadRef.current = true;
-          const finalScore = scoreRef.current;
-          if (finalScore > highScore) setHighScore(finalScore);
+          handleDeath("Hit the wall!");
+          return;
+        }
+      } else if (isOnWall(nx, ny)) {
+        if (isInGap(nx, ny, g)) {
+          const wrapped = getWrapPosition(nx, ny, g);
+          nx = wrapped.x;
+          ny = wrapped.y;
+          const newGap = randomGap(g.wall);
+          setGap(newGap);
+          gapRef.current = newGap;
+        } else {
+          handleDeath("Hit the wall!");
           return;
         }
       }
 
       for (let i = 0; i < s.length; i++) {
         if (s[i].x === nx && s[i].y === ny) {
-          setDead(true);
-          deadRef.current = true;
-          const finalScore = scoreRef.current;
-          if (finalScore > highScore) setHighScore(finalScore);
+          handleDeath("Bit yourself!");
           return;
         }
       }
@@ -417,8 +455,8 @@ function GameBoard({ head, highScore, setHighScore }) {
         newSnake[newSnake.length - 1] = { ...newSnake[newSnake.length - 1], color: f.color };
 
         const newScore = scoreRef.current + 1;
-        setScore(newScore);
         scoreRef.current = newScore;
+        setScore(newScore);
 
         const newFruit = spawnFruit(newSnake);
         setFruit(newFruit);
@@ -431,163 +469,136 @@ function GameBoard({ head, highScore, setHighScore }) {
         newSnake = [newHead, ...s.slice(0, -1)];
       }
 
-      setSnake(newSnake);
       snakeRef.current = newSnake;
-
+      setSnake(newSnake);
       tickRef.current = setTimeout(tick, getSpeed());
     };
 
     tickRef.current = setTimeout(tick, getSpeed());
     return () => clearTimeout(tickRef.current);
-  }, [dead, highScore, setHighScore, getSpeed, spawnParticles]);
+  }, [gameOver, deathPause, getSpeed, spawnParticles, handleDeath]);
 
-  if (dead) {
-    const isNewHigh = score >= highScore && score > 0;
+  if (gameOver) {
+    const finalScore = scoreRef.current;
+    const best = Math.max(finalScore, highScore);
     return (
-      <GameOver
-        score={score}
-        length={snake.length}
-        highScore={Math.max(score, highScore)}
-        isNewHigh={isNewHigh}
-        onRestart={() => { window.__dragonSnakeRestart?.(); }}
+      <GameOverScreen
+        score={finalScore} length={snake.length} highScore={best}
+        isNewHigh={finalScore > 0 && finalScore >= highScore}
+        onRestart={onGameOver}
       />
     );
   }
 
   const boardPx = GRID_SIZE * CELL_SIZE;
-
   const wallCells = [];
-  for (let i = 0; i < GRID_SIZE; i++) {
-    if (!isInGap(i, 0, gap)) wallCells.push({ x: i, y: 0 });
-    if (!isInGap(i, GRID_SIZE - 1, gap)) wallCells.push({ x: i, y: GRID_SIZE - 1 });
-    if (i > 0 && i < GRID_SIZE - 1 && !isInGap(0, i, gap)) wallCells.push({ x: 0, y: i });
-    if (i > 0 && i < GRID_SIZE - 1 && !isInGap(GRID_SIZE - 1, i, gap)) wallCells.push({ x: GRID_SIZE - 1, y: i });
-  }
-
   const gapCells = [];
   for (let i = 0; i < GRID_SIZE; i++) {
-    if (isInGap(i, 0, gap)) gapCells.push({ x: i, y: 0 });
-    if (isInGap(i, GRID_SIZE - 1, gap)) gapCells.push({ x: i, y: GRID_SIZE - 1 });
+    for (const [wx, wy] of [[i, 0], [i, GRID_SIZE - 1]]) {
+      if (isInGap(wx, wy, gap)) gapCells.push({ x: wx, y: wy });
+      else wallCells.push({ x: wx, y: wy });
+    }
     if (i > 0 && i < GRID_SIZE - 1) {
-      if (isInGap(0, i, gap)) gapCells.push({ x: 0, y: i });
-      if (isInGap(GRID_SIZE - 1, i, gap)) gapCells.push({ x: GRID_SIZE - 1, y: i });
+      for (const [wx, wy] of [[0, i], [GRID_SIZE - 1, i]]) {
+        if (isInGap(wx, wy, gap)) gapCells.push({ x: wx, y: wy });
+        else wallCells.push({ x: wx, y: wy });
+      }
     }
   }
 
   return (
-    <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      minHeight: "100vh", background: "linear-gradient(165deg, #0a0a12 0%, #12121f 40%, #1a0a1e 100%)",
-      fontFamily: "'Segoe UI', system-ui, sans-serif", color: "#e8e0f0", padding: 20,
-    }}>
-      <div style={{ display: "flex", gap: 24, marginBottom: 12, fontSize: 13, letterSpacing: 1 }}>
+    <div style={BG_STYLE}>
+      <div style={{ display: "flex", gap: 20, marginBottom: 10, fontSize: 13, letterSpacing: 1, alignItems: "center" }}>
         <span style={{ color: "#ffd700" }}>SCORE: <b>{score}</b></span>
         <span style={{ color: "#00e676" }}>LENGTH: <b>{snake.length}</b></span>
         <span style={{ color: "#8a7fa0" }}>BEST: <b>{Math.max(highScore, score)}</b></span>
+        <span style={{ display: "flex", gap: 2 }}>
+          {Array.from({ length: TOTAL_LIVES }, (_, i) => (
+            <span key={i} style={{ fontSize: 14, opacity: i < lives ? 1 : 0.2 }}>❤️</span>
+          ))}
+        </span>
         <span style={{ fontSize: 18 }}>{head.emoji}</span>
       </div>
 
-      <div style={{
-        position: "relative",
-        width: boardPx, height: boardPx,
-        background: "rgba(10, 10, 20, 0.9)",
-        borderRadius: 4,
-        overflow: "hidden",
-        boxShadow: flash
-          ? `0 0 40px rgba(255,255,255, 0.2), inset 0 0 30px rgba(255,255,255,0.05)`
-          : "0 0 40px rgba(0,0,0,0.5), inset 0 0 30px rgba(255,255,255,0.02)",
-        transition: "box-shadow 0.15s ease",
-      }}>
-        <svg width={boardPx} height={boardPx} style={{ position: "absolute", top: 0, left: 0, opacity: 0.04 }}>
-          {Array.from({ length: GRID_SIZE }, (_, i) => (
-            <line key={`h${i}`} x1={0} y1={i * CELL_SIZE} x2={boardPx} y2={i * CELL_SIZE} stroke="#fff" strokeWidth={0.5} />
-          ))}
-          {Array.from({ length: GRID_SIZE }, (_, i) => (
-            <line key={`v${i}`} x1={i * CELL_SIZE} y1={0} x2={i * CELL_SIZE} y2={boardPx} stroke="#fff" strokeWidth={0.5} />
-          ))}
-        </svg>
-
-        {wallCells.map((w, i) => (
-          <div key={`w${i}`} style={{
-            position: "absolute", left: w.x * CELL_SIZE, top: w.y * CELL_SIZE,
-            width: CELL_SIZE, height: CELL_SIZE,
-            background: "linear-gradient(135deg, #2a1a3a, #1a1028)",
-            border: "1px solid rgba(120, 80, 160, 0.3)",
-            boxSizing: "border-box",
-          }} />
-        ))}
-
-        {gapCells.map((g, i) => (
-          <div key={`g${i}`} style={{
-            position: "absolute", left: g.x * CELL_SIZE, top: g.y * CELL_SIZE,
-            width: CELL_SIZE, height: CELL_SIZE,
-            background: "rgba(0, 230, 118, 0.08)",
-            border: "1px dashed rgba(0, 230, 118, 0.4)",
-            boxSizing: "border-box",
-            boxShadow: "0 0 8px rgba(0, 230, 118, 0.2)",
-            animation: "gapPulse 2s ease-in-out infinite",
-          }} />
-        ))}
-
+      <div style={{ position: "relative", width: boardPx, height: boardPx }}>
         <div style={{
-          position: "absolute",
-          left: fruit.x * CELL_SIZE, top: fruit.y * CELL_SIZE,
-          width: CELL_SIZE, height: CELL_SIZE,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 16,
-          filter: `drop-shadow(0 0 6px ${fruit.color})`,
-          animation: "fruitBob 1.5s ease-in-out infinite",
+          position: "relative", width: boardPx, height: boardPx,
+          background: "rgba(10, 10, 20, 0.9)", borderRadius: 4, overflow: "hidden",
+          boxShadow: flash
+            ? "0 0 40px rgba(255,200,50,0.4), inset 0 0 30px rgba(255,255,255,0.05)"
+            : "0 0 40px rgba(0,0,0,0.5), inset 0 0 30px rgba(255,255,255,0.02)",
+          transition: "box-shadow 0.15s ease",
         }}>
-          {fruit.emoji}
-        </div>
+          <svg width={boardPx} height={boardPx} style={{ position: "absolute", top: 0, left: 0, opacity: 0.04 }}>
+            {Array.from({ length: GRID_SIZE }, (_, i) => (
+              <line key={`h${i}`} x1={0} y1={i * CELL_SIZE} x2={boardPx} y2={i * CELL_SIZE} stroke="#fff" strokeWidth={0.5} />
+            ))}
+            {Array.from({ length: GRID_SIZE }, (_, i) => (
+              <line key={`v${i}`} x1={i * CELL_SIZE} y1={0} x2={i * CELL_SIZE} y2={boardPx} stroke="#fff" strokeWidth={0.5} />
+            ))}
+          </svg>
 
-        {[...snake].reverse().map((seg, ri) => {
-          const i = snake.length - 1 - ri;
-          const isHead = i === 0;
-          const segSize = isHead ? CELL_SIZE : CELL_SIZE - 2;
-          const offset = isHead ? 0 : 1;
-          const opacity = Math.max(0.5, 1 - (i / snake.length) * 0.5);
-          const borderRadius = isHead ? 6 : Math.max(4, 8 - i * 0.3);
+          {wallCells.map((w, i) => (
+            <div key={`w${i}`} style={{
+              position: "absolute", left: w.x * CELL_SIZE, top: w.y * CELL_SIZE,
+              width: CELL_SIZE, height: CELL_SIZE,
+              background: "linear-gradient(135deg, #2a1a3a, #1a1028)",
+              border: "1px solid rgba(120, 80, 160, 0.3)", boxSizing: "border-box",
+            }} />
+          ))}
 
-          return (
-            <div
-              key={i}
-              style={{
+          {gapCells.map((g, i) => (
+            <div key={`g${i}`} style={{
+              position: "absolute", left: g.x * CELL_SIZE, top: g.y * CELL_SIZE,
+              width: CELL_SIZE, height: CELL_SIZE,
+              background: "rgba(0, 230, 118, 0.08)",
+              border: "1px dashed rgba(0, 230, 118, 0.4)", boxSizing: "border-box",
+              boxShadow: "0 0 8px rgba(0, 230, 118, 0.2)",
+              animation: "gapPulse 2s ease-in-out infinite",
+            }} />
+          ))}
+
+          <div style={{
+            position: "absolute", left: fruit.x * CELL_SIZE, top: fruit.y * CELL_SIZE,
+            width: CELL_SIZE, height: CELL_SIZE,
+            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16,
+            filter: `drop-shadow(0 0 6px ${fruit.color})`,
+            animation: "fruitBob 1.5s ease-in-out infinite",
+          }}>{fruit.emoji}</div>
+
+          {[...snake].reverse().map((seg, ri) => {
+            const i = snake.length - 1 - ri;
+            const isHead = i === 0;
+            const segSize = isHead ? CELL_SIZE : CELL_SIZE - 2;
+            const offset = isHead ? 0 : 1;
+            const opacity = Math.max(0.5, 1 - (i / snake.length) * 0.5);
+            const br = isHead ? 6 : Math.max(4, 8 - i * 0.3);
+            return (
+              <div key={i} style={{
                 position: "absolute",
-                left: seg.x * CELL_SIZE + offset,
-                top: seg.y * CELL_SIZE + offset,
-                width: segSize, height: segSize,
-                borderRadius,
+                left: seg.x * CELL_SIZE + offset, top: seg.y * CELL_SIZE + offset,
+                width: segSize, height: segSize, borderRadius: br,
                 background: isHead ? "rgba(40, 30, 50, 0.9)" : seg.color,
-                opacity,
-                display: "flex", alignItems: "center", justifyContent: "center",
+                opacity, display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: isHead ? 16 : 0,
                 boxShadow: isHead ? "0 0 10px rgba(255,215,0,0.3)" : `0 0 4px ${seg.color}44`,
-                zIndex: isHead ? 50 : 40 - i,
-                transition: "background 0.1s",
-              }}
-            >
-              {isHead ? head.emoji : null}
-            </div>
-          );
-        })}
+                zIndex: isHead ? 50 : 40 - i, transition: "background 0.1s",
+              }}>{isHead ? head.emoji : null}</div>
+            );
+          })}
 
-        <Particles particles={particles} />
+          <Particles particles={particles} />
+        </div>
+
+        {deathPause && <DeathOverlay livesLeft={lives} reason={deathReason} />}
       </div>
 
       <p style={{ color: "#5a5270", fontSize: 11, marginTop: 10, letterSpacing: 0.5 }}>
         Arrow keys or WASD to move · Find the <span style={{ color: "#00e676" }}>green gap</span> to warp
       </p>
-
       <style>{`
-        @keyframes gapPulse {
-          0%, 100% { opacity: 0.6; }
-          50% { opacity: 1; }
-        }
-        @keyframes fruitBob {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-2px); }
-        }
+        @keyframes gapPulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+        @keyframes fruitBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-2px)} }
       `}</style>
     </div>
   );
@@ -597,34 +608,21 @@ function App() {
   const [screen, setScreen] = useState("select");
   const [selectedHead, setSelectedHead] = useState(null);
   const [highScore, setHighScore] = useState(0);
-
-  const restartToSelect = useCallback(() => {
-    setScreen("select");
-    setSelectedHead(null);
-  }, []);
-
-  useEffect(() => {
-    window.__dragonSnakeRestart = restartToSelect;
-    return () => { delete window.__dragonSnakeRestart; };
-  }, [restartToSelect]);
+  const [gameKey, setGameKey] = useState(0);
 
   if (screen === "select") {
     return (
-      <CharacterSelect
-        onSelect={(head) => {
-          setSelectedHead(head);
-          setScreen("game");
-        }}
-      />
+      <CharacterSelect onSelect={(h) => { setSelectedHead(h); setScreen("game"); }} />
     );
   }
 
   return (
     <GameBoard
-      key={Date.now()}
+      key={gameKey}
       head={selectedHead}
       highScore={highScore}
       setHighScore={setHighScore}
+      onGameOver={() => { setScreen("select"); setSelectedHead(null); setGameKey((k) => k + 1); }}
     />
   );
 }
