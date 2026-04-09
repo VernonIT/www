@@ -30,6 +30,10 @@ This site may contain links to external websites. We are not responsible for the
 
 We may update this policy from time to time. Changes will be reflected by the "Last updated" date above.
 
+### App Privacy Policies
+
+- [1LiD: One Less Idiot Driver](/privacy-1lid) — mobile app (Google Play & Apple App Store)
+
 ### Contact
 
 Questions? Email us via the [contact page](/contact).
