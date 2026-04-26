@@ -86,7 +86,7 @@ type: page
 
 <div class="arcade-hero">
   <h1>Arcade</h1>
-  <p>Three games. No install. Play in your browser.</p>
+  <p>Four games. No install. Play in your browser.</p>
 </div>
 
 <div class="arcade-grid">
@@ -114,6 +114,15 @@ type: page
     <div class="arcade-card-body">
       <div class="arcade-card-title">Dragon Snake</div>
       <p class="arcade-card-desc">Pick your spirit animal and hunt exotic fruit. Find the glowing gap to warp through walls.</p>
+      <span class="arcade-card-play">Play</span>
+    </div>
+  </a>
+
+  <a class="arcade-card" href="/arcade/neon-sprint.html" target="_blank" rel="noopener">
+    <div class="arcade-card-thumb">🏃</div>
+    <div class="arcade-card-body">
+      <div class="arcade-card-title">Neon Sprint</div>
+      <p class="arcade-card-desc">Run forever through a neon cityscape. Jump, double-jump, and dodge obstacles as the city blurs past.</p>
       <span class="arcade-card-play">Play</span>
     </div>
   </a>
